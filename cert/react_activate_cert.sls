@@ -22,7 +22,7 @@ run_activate_command:
 
 update_current_file:
   file.managed:
-    - name: /etc/vault_pki/live/{{ grains['id'] }}/current
+    - name: /etc/vault_pki/live/{{ grains['fqdn'] }}/current
     - mode: 0644
     - user: root
     - group: cert-access

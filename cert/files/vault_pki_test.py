@@ -21,7 +21,7 @@ __author__ = 'Daniel Wilcox (dmw@ripple.com)'
 
 import logging
 import os
-import platform
+import socket
 import stat
 import unittest
 
@@ -53,7 +53,7 @@ class TestActivate(fake_filesystem_unittest.TestCase):
 
     def setUp(self):
         self.setUpPyfakefs()
-        self.fqdn = platform.node()
+        self.fqdn = socket.getfqdn()
         self.uid = os.getuid()
         self.gid = os.getgid()
 

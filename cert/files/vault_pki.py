@@ -116,8 +116,8 @@ import datetime
 import grp
 import logging
 import os
-import platform
 import re
+import socket
 import stat
 import subprocess
 import sys
@@ -526,7 +526,7 @@ def _get_version_assets(version_str, fqdn=None, base_dir=BASE_DIR):
     path_join = os.path.join
     is_dir = os.path.isdir
     if not fqdn:
-        fqdn = platform.node()
+        fqdn = socket.getfqdn()
     format_settings = {'base': base_dir, 'fqdn': fqdn}
     archive_dir = ARCHIVE_DIR.format(**format_settings)
     key_dir = KEY_DIR.format(**format_settings)
@@ -614,7 +614,7 @@ def activate_main(args):
     if not re.match(VERSION_DIR_REGEX, version_str):
         logger.critical('Invalid version string: "{}"'.format(version_str))
         sys.exit(1)
-    fqdn = platform.node()
+    fqdn = socket.getfqdn()
     format_settings = {'base': BASE_DIR, 'fqdn': fqdn}
     live_dir = LIVE_DIR.format(**format_settings)
     if not os.access(live_dir, os.W_OK):
@@ -640,7 +640,7 @@ def checkgen_main(args):
     Note: this sub-command does *not* activate the new cert by switching
     symlinks, please see the activate sub-command for that.
     """
-    fqdn = platform.node()
+    fqdn = socket.getfqdn()
     if not fqdn:
         raise SetupError('Missing FQDN!')
     try:
@@ -685,7 +685,7 @@ def checkgen_main(args):
 
 
 def list_main(args):
-    fqdn = platform.node()
+    fqdn = socket.getfqdn()
     if not fqdn:
         raise SetupError('Missing FQDN!')
     format_settings = {'base': BASE_DIR, 'fqdn': fqdn}
