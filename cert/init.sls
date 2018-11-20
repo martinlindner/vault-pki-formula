@@ -50,11 +50,13 @@ install python cryptography module:
     - require:
       - pkg: python2-pip
 
-/etc/vault_pki/post-activate.d:
+/etc/vault_pki/post-activate.d/generate-keystore.sh:
   file.managed:
     - source: salt://cert/files/generate-keystore.sh
     - user: root
     - group: root
+    - makedirs: true
+    - dir_mode: 0644
     - mode: 0755
     # temp: we only deploy this if keytool & tomcat config already in place
     - onlyif:
