@@ -169,6 +169,7 @@ KEY_FILENAME = 'privkey.pem'
 PKCS8_KEY_FILENAME = 'privkey.pkcs8'
 CERT_FILENAME = 'cert.pem'
 FULLCHAIN_FILENAME = 'fullchain.pem'
+SHORTCHAIN_FILENAME = 'chain.pem'
 
 DEFAULT_KEY_LENGTH = 2048
 
@@ -417,8 +418,10 @@ def _activate_version(version_str, live_dir):
     live_pkcs8_key_path = os.path.join(live_dir, PKCS8_KEY_FILENAME)
     live_cert_path = os.path.join(live_dir, CERT_FILENAME)
     live_chain_path = os.path.join(live_dir, FULLCHAIN_FILENAME)
+    live_shortchain_path = os.path.join(live_dir, SHORTCHAIN_FILENAME)
     (cert_path,
      chain_path,
+     shortchain_path,
      key_path,
      pkcs8_key_path) = _get_version_assets(version_str)
     try:
@@ -426,6 +429,7 @@ def _activate_version(version_str, live_dir):
         _atomic_link_switch(pkcs8_key_path, live_pkcs8_key_path)
         _atomic_link_switch(cert_path, live_cert_path)
         _atomic_link_switch(chain_path, live_chain_path)
+        _atomic_link_switch(shortchain_path, live_shortchain_path)
     except ActivationError:
         logger.critical(
             'Failed to activate "{}"!'.format(
@@ -483,6 +487,7 @@ def _get_current_version(live_dir):
     missing = set()
     expected_files = {CERT_FILENAME,
                       FULLCHAIN_FILENAME,
+                      SHORTCHAIN_FILENAME,
                       KEY_FILENAME,
                       PKCS8_KEY_FILENAME}
     for filename in expected_files:
@@ -543,15 +548,16 @@ def _get_version_assets(version_str, fqdn=None, base_dir=BASE_DIR):
     pkcs8_key_path = path_join(key_version_dir, PKCS8_KEY_FILENAME)
     cert_path = path_join(archive_version_dir, CERT_FILENAME)
     chain_path = path_join(archive_version_dir, FULLCHAIN_FILENAME)
+    shortchain_path = path_join(archive_version_dir, SHORTCHAIN_FILENAME)
     access_ok = [os.access(path, os.R_OK)
-                 for path in (key_path, pkcs8_key_path, cert_path, chain_path)]
+                 for path in (key_path, pkcs8_key_path, cert_path, chain_path, shortchain_path)]
     if not all(access_ok):
         err = 'Unable to *all* read necessary files:\n{}'.format(
-            [key_path, pkcs8_key_path, cert_path, chain_path]
+            [key_path, pkcs8_key_path, cert_path, chain_path, shortchain_path]
         )
         logger.critical(err)
         raise ActivationError(err)
-    return (cert_path, chain_path, key_path, pkcs8_key_path)
+    return (cert_path, chain_path, shortchain_path, key_path, pkcs8_key_path)
 
 
 def get_post_activate_scripts(base_dir=BASE_DIR):
